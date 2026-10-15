@@ -32,9 +32,25 @@ enum CardReader {
     var keys = words
     for index in words.indices.dropLast() { keys.append(words[index] + words[index + 1]) }  // "Mr. Mime", "Ho-Oh", "Farfetch'd"
     candidates += keys.compactMap { latinNames[$0] }
-    let letters = folded.filter(\.isLetter)
-    candidates += cjkNames.filter { letters.contains($0.key) }.map(\.value)
+    let letters = Array(folded.filter(\.isLetter))
+    for (key, species) in cjkNames where nearlyContains(letters, Array(key)) { candidates.append(species) }
     return candidates.max { fold($0.name).count < fold($1.name).count }
+  }
+
+  /// Glossy cards make text recognition swap one kana (デカグース read as デカダース),
+  /// so a name of four or more characters may differ from the printed text by one.
+  private static func nearlyContains(_ text: [Character], _ name: [Character]) -> Bool {
+    guard name.count <= text.count else { return false }
+    let allowed = name.count >= 4 ? 1 : 0
+    for start in 0...(text.count - name.count) {
+      var mismatches = 0
+      for offset in 0..<name.count where text[start + offset] != name[offset] {
+        mismatches += 1
+        if mismatches > allowed { break }
+      }
+      if mismatches <= allowed { return true }
+    }
+    return false
   }
 
   private static func fold(_ text: String) -> String {
