@@ -1,15 +1,12 @@
 import SwiftUI
 
 struct DisplayPanel: View {
-  var entry: DexEntry
-  var image: UIImage?
-  var originalPhoto: UIImage?
-  var subjectBounds: CGRect
+  var model: DexModel
   @Environment(\.accessibilityReduceMotion) private var reduceMotion
-  var busy: Bool
-  var phase: String
 
-  private var isEmpty: Bool { entry.number == 0 && originalPhoto == nil && image == nil && !busy }
+  private var entry: DexEntry { model.entry }
+  private var isEmpty: Bool { entry.number == 0 && model.originalPhoto == nil && model.cutout == nil && !model.busy }
+  private var showsCamera: Bool { model.liveCamera && CameraEngine.hasCamera && isEmpty }
 
   var body: some View {
     VStack(spacing: 10) {
@@ -21,12 +18,27 @@ struct DisplayPanel: View {
         HStack {
           Text(entry.number > 0 ? String(format: "No. %03d", entry.number) : "No. ———")
           Spacer()
-          Text(busy ? "CAPTURING" : isEmpty ? "AWAITING CAPTURE" : entry.number > 0 ? "AI MATCH" : "NO MATCH")
+          Text(model.busy ? "CAPTURING" : isEmpty ? "AWAITING CAPTURE" : entry.number > 0 ? "MATCH" : "NO MATCH")
         }.font(.system(.caption2, design: .monospaced, weight: .medium))
         ZStack {
           GridPattern().stroke(DexTheme.ink.opacity(0.065), lineWidth: 0.5)
-          if originalPhoto != nil || image != nil {
-            ScanReveal(original: originalPhoto, cutout: image, subjectBounds: subjectBounds, artificialShadow: entry.removalMode == .onDevice, removing: busy && image == nil)
+          if showsCamera {
+            if model.cameraAuthorized == false {
+              VStack(spacing: 8) {
+                Image(systemName: "camera.slash").font(.system(size: 40))
+                Text("Camera is off. Allow it in system Settings, or use PHOTO.").font(.caption).multilineTextAlignment(.center)
+              }.opacity(0.6).padding()
+            } else {
+              CameraPreview(engine: model.camera)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
+                .task { await model.startCamera() }
+                .onDisappear { model.stopCamera() }
+                .accessibilityLabel("Live camera. Press the camera button to capture.")
+              Image(systemName: "viewfinder").font(.system(size: 75, weight: .thin)).foregroundStyle(.white.opacity(0.7))
+                .allowsHitTesting(false).accessibilityHidden(true)
+            }
+          } else if model.originalPhoto != nil || model.cutout != nil {
+            ScanReveal(original: model.originalPhoto, cutout: model.cutout, subjectBounds: model.subjectBounds, artificialShadow: entry.removalMode == .onDevice, removing: model.busy && model.cutout == nil)
           } else {
             Image(systemName: "viewfinder").font(.system(size: 75)).opacity(0.4)
           }
@@ -48,7 +60,7 @@ struct DisplayPanel: View {
         Circle().fill(DexTheme.red.gradient).frame(width: 18, height: 18)
           .overlay(Circle().stroke(.black.opacity(0.3)))
         Spacer()
-        Text("\(busy ? "PROCESSING" : "\u{25CF}  " + phase.uppercased())")
+        Text("\(model.busy ? "PROCESSING" : "\u{25CF}  " + model.phase.uppercased())")
           .font(.system(size: 9, weight: .semibold, design: .monospaced)).foregroundStyle(DexTheme.ink.opacity(0.65))
       }.padding(.horizontal, 8).padding(.top, 2)
     }

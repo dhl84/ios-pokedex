@@ -1,0 +1,45 @@
+name: PocketDex
+options:
+  xcodeVersion: "27.0"
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    DEVELOPMENT_TEAM: 5C49Q9G3ML
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "1.1"
+    CURRENT_PROJECT_VERSION: "2"
+targets:
+  Pocket Dex:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: App
+        excludes: ["Info.plist"]
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Pocket Dex
+        ITSAppUsesNonExemptEncryption: false
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        NSCameraUsageDescription: Take a picture of a Pokémon to remove its background and identify it.
+        NSLocationWhenInUseUsageDescription: Save where you found each Pokémon so you can see it on the map later.
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UISceneConfigurations: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dhl84.pocketdex
+        PRODUCT_NAME: Pocket Dex
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SUPPORTS_MACCATALYST: false
+        SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: false
+        SUPPORTED_PLATFORMS: "iphoneos iphonesimulator"
+        ENABLE_USER_SCRIPT_SANDBOXING: true

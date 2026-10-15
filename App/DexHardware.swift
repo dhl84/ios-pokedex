@@ -66,32 +66,3 @@ struct HingeSpine: View {
       .shadow(color: .white.opacity(0.2), radius: 0, y: 3)
   }
 }
-
-struct ReplicaCover: View {
-  var body: some View {
-    GeometryReader { geometry in
-      VStack(spacing: 0) {
-        ReplicaSensor()
-        ZStack {
-          RoundedRectangle(cornerRadius: 18).fill(.black.opacity(0.035))
-            .overlay(RoundedRectangle(cornerRadius: 18).stroke(.black.opacity(0.4), lineWidth: 3))
-            .overlay(RoundedRectangle(cornerRadius: 14).stroke(.white.opacity(0.12)).padding(5))
-          HStack {
-            Path { p in
-              p.move(to: .zero); p.addLine(to: CGPoint(x: 15, y: 10)); p.addLine(to: CGPoint(x: 0, y: 20)); p.closeSubpath()
-            }.fill(.yellow.gradient).frame(width: 15, height: 20).padding(.leading, 9)
-            Spacer()
-          }
-          VStack {
-            Spacer()
-            Capsule().fill(.black.opacity(0.35)).frame(width: 67, height: 4)
-              .overlay(Capsule().stroke(.white.opacity(0.18))).padding(.bottom, 35)
-          }
-        }.padding(.top, 8).padding(.horizontal, 11).padding(.bottom, 12)
-      }
-      .frame(width: geometry.size.width, height: geometry.size.height)
-      .background(DexTheme.shell, in: RoundedRectangle(cornerRadius: 24))
-    }.accessibilityElement(children: .ignore)
-      .accessibilityLabel("Pokédex cover closed. Unfold your iPhone to open the Pokédex.")
-  }
-}

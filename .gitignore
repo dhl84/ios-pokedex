@@ -37,3 +37,6 @@ node_modules/
 # Build
 build/
 build-*/
+App/Info.plist
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/

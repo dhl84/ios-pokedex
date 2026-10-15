@@ -11,7 +11,7 @@ struct JournalView: View {
   var body: some View {
     let scans = model.latestScans
     let captured = model.capturedSpecies
-    let species = PokemonSpecies.all.filter {
+    let species = PokemonSpecies.catalog.filter {
       (generation == 0 || $0.generation == generation)
     }
     let visible = species.filter { pokemon in

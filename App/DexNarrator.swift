@@ -56,7 +56,8 @@ final class DexNarrator: NSObject, AVSpeechSynthesizerDelegate {
 
   func narrate(_ entry: DexEntry) {
     guard entry.number > 0 else { return }
-    speak("\(entry.name). \(entry.type.replacingOccurrences(of: "/", with: " and ")) type Pokémon. \(entry.summary)")
+    let genus = entry.genus.map { "The \($0). " } ?? ""
+    speak("\(entry.name). \(genus)\(entry.type.replacingOccurrences(of: "/", with: " and ")) type. \(entry.summary)")
   }
 
   func preview() {

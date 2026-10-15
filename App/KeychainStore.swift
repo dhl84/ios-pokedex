@@ -2,14 +2,19 @@ import Foundation
 import Security
 
 enum KeychainStore {
-  private static var query: [String: Any] {
-    [kSecClass as String: kSecClassGenericPassword,
-     kSecAttrService as String: "PocketDex.Photoroom",
-     kSecAttrAccount as String: "api-key"]
+  enum Account: String {
+    case photoroom = "api-key"
+    case anthropic = "anthropic-key"
   }
 
-  static func read() -> String {
-    var request = query
+  private static func query(_ account: Account) -> [String: Any] {
+    [kSecClass as String: kSecClassGenericPassword,
+     kSecAttrService as String: "PocketDex.Photoroom",
+     kSecAttrAccount as String: account.rawValue]
+  }
+
+  static func read(_ account: Account = .photoroom) -> String {
+    var request = query(account)
     request[kSecReturnData as String] = true
     request[kSecMatchLimit as String] = kSecMatchLimitOne
     var value: CFTypeRef?
@@ -18,7 +23,8 @@ enum KeychainStore {
     return String(data: data, encoding: .utf8) ?? ""
   }
 
-  static func save(_ key: String) throws {
+  static func save(_ key: String, account: Account = .photoroom) throws {
+    let query = query(account)
     if key.isEmpty {
       let status = SecItemDelete(query as CFDictionary)
       guard status == errSecSuccess || status == errSecItemNotFound else { throw DexError.message("Couldn’t remove the key from Keychain.") }

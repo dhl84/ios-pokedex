@@ -28,3 +28,14 @@ The standalone Scan history section has been removed. Saved scan data remains pe
 ## Persisted scan images
 
 ScanImageStore writes each successful cutout as an atomic PNG to Documents/Scans/<entry UUID>.png, retaining alpha transparency. The entry's imageName is stored with the existing persisted history. The directory and filenames are unchanged, so previous scans remain compatible. Both the full entry and the Pokédex cards load from this shared store after relaunch. Cards asynchronously downsample to 320 pixels instead of decoding every original at full size. A missing or damaged file displays “Image unavailable” without discarding tracked progress.
+
+
+## Bundled Pokédex data (dhl84 fork)
+
+`App/PokemonData.swift` holds name, genus, types and entry text for every species, 001–1025; the journal and picker use the first 386 (`PokemonSpecies.catalog`). It is generated from the PokeAPI CSV files `pokemon_species_names.csv`, `pokemon_types.csv`, `types.csv` and `pokemon_species_flavor_text.csv` (English, language 9). The entry text prefers FireRed, then LeafGreen, Emerald, Sapphire and Ruby. Game Boy Advance all-caps words are title-cased and species names restored to their normal spelling.
+
+Regenerate with the script kept in this repo:
+
+```sh
+python3 Scripts/gen_data.py <dir with the four CSV files> App/PokemonData.swift
+```

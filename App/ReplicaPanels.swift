@@ -26,13 +26,13 @@ struct LeftHardwarePanel: View {
     VStack(spacing: 0) {
       ReplicaSensor()
       VStack(spacing: 16) {
-        DisplayPanel(entry: model.entry, image: model.cutout, originalPhoto: model.originalPhoto, subjectBounds: model.subjectBounds, busy: model.busy, phase: model.phase)
+        DisplayPanel(model: model)
         HStack(spacing: 13) {
           Button(action: camera) {
             Circle().fill(Color(white: 0.10).gradient).frame(width: 42, height: 42)
               .overlay(Circle().stroke(.black, lineWidth: 3))
               .overlay(Image(systemName: "camera.fill").font(.system(size: 15)).foregroundStyle(.white.opacity(0.65)))
-          }.accessibilityLabel("Take a Pokémon photo").disabled(model.busy)
+          }.accessibilityLabel(model.liveCamera ? "Take a Pokémon photo" : "Scan another Pokémon").disabled(model.busy)
           Capsule().fill(Color(red: 0.97, green: 0.28, blue: 0.20)).frame(width: 47, height: 9).overlay(Capsule().stroke(.black.opacity(0.65), lineWidth: 2))
           Capsule().fill(DexTheme.lime).frame(width: 47, height: 9).overlay(Capsule().stroke(.black.opacity(0.65), lineWidth: 2))
           Spacer()
@@ -41,7 +41,7 @@ struct LeftHardwarePanel: View {
           VStack(alignment: .leading, spacing: 6) {
             Text(model.busy ? "CAPTURING…" : "POKÉDEX READY")
             Text("FOUND  \(model.capturedSpecies.count.formatted(.number.precision(.integerLength(3))))")
-            Text(model.entry.number > 0 ? "LOCAL AI MATCH" : "AWAITING CAPTURE")
+            Text(model.entry.number > 0 ? "MATCH FOUND" : "AWAITING CAPTURE")
           }.font(.system(size: 10, weight: .medium, design: .monospaced))
             .foregroundStyle(Color(red: 0.18, green: 0.30, blue: 0.07))
             .frame(width: 138, height: 65, alignment: .leading).padding(.leading, 12)
@@ -75,6 +75,7 @@ struct RightHardwarePanel: View {
   var model: DexModel
   var settings: () -> Void
   var journal: () -> Void
+  var pick: () -> Void
   @State private var notes = false
   @State private var showLocation = false
   var body: some View {
@@ -84,10 +85,13 @@ struct RightHardwarePanel: View {
         Button { notes = true } label: {
           VStack(alignment: .leading, spacing: 9) {
             Text(model.entry.name.uppercased()).font(.system(size: 12, weight: .bold, design: .monospaced))
+            if let genus = model.entry.genus {
+              Text(genus.uppercased()).font(.system(size: 9, weight: .medium, design: .monospaced)).foregroundStyle(.white.opacity(0.6))
+            }
             Text(model.entry.summary).font(.system(size: 15, weight: .medium, design: .monospaced)).lineSpacing(3)
               .lineLimit(7)
             Spacer(minLength: 0)
-            Text(model.entry.number > 0 ? "ON-DEVICE AI • TAP FOR DETAILS" : "CAMERA OR PHOTO TO BEGIN")
+            Text(model.entry.number > 0 ? "TAP FOR DETAILS" : "CAMERA OR PHOTO TO BEGIN")
               .font(.system(size: 8, design: .monospaced)).foregroundStyle(.white.opacity(0.45))
           }.foregroundStyle(Color(white: 0.91)).padding(16)
             .frame(maxWidth: .infinity, alignment: .leading).frame(height: 188)
@@ -99,22 +103,23 @@ struct RightHardwarePanel: View {
             HStack(spacing: 3) {
               ForEach(0..<5) { column in
                 let isLocationKey = row == 0 && column == 0
+                let isPickKey = row == 0 && column == 1
                 Button {
-                  if isLocationKey { showLocation = true } else { notes = true }
+                  if isLocationKey { showLocation = true } else if isPickKey { pick() } else { notes = true }
                 } label: {
                   RoundedRectangle(cornerRadius: 3)
                     .fill(LinearGradient(colors: [Color(red: 0.3, green: 0.70, blue: 0.95), Color(red: 0.12, green: 0.42, blue: 0.74)], startPoint: .top, endPoint: .bottom))
                     .overlay(RoundedRectangle(cornerRadius: 3).stroke(.black.opacity(0.65)))
                     .frame(height: 34)
                     .overlay {
-                      if isLocationKey {
-                        Image(systemName: "mappin.and.ellipse")
+                      if isLocationKey || isPickKey {
+                        Image(systemName: isLocationKey ? "mappin.and.ellipse" : "pencil")
                           .font(.system(size: 17, weight: .semibold))
                           .foregroundStyle(.black.opacity(0.8))
                       }
                     }
-                }.accessibilityLabel(isLocationKey ? "Show capture location" : "Entry details, key \(row * 5 + column + 1)")
-                  .disabled(isLocationKey && (model.busy || model.entry.number == 0))
+                }.accessibilityLabel(isLocationKey ? "Show capture location" : isPickKey ? "Name this Pokémon yourself" : "Entry details, key \(row * 5 + column + 1)")
+                  .disabled((isLocationKey && (model.busy || model.entry.number == 0)) || (isPickKey && !model.canAssign))
               }
             }
           }
@@ -163,7 +168,9 @@ struct RightHardwarePanel: View {
           VStack(alignment: .leading, spacing: 20) {
             Text(model.entry.type).font(.headline).foregroundStyle(.secondary)
             Text(model.entry.summary).font(.title3)
-            Text(model.entry.number > 0 ? "Generated on device. AI identification and notes can be inaccurate." : "Choose a photo or use the camera to begin. Background removal uses Photoroom; identification happens on your iPhone.").font(.footnote).foregroundStyle(.secondary)
+            Text(model.entry.number > 0
+              ? (model.entry.genus != nil ? "Pokédex entry from the Generation III games." : "AI-generated. Identification and notes can be inaccurate.")
+              : "Choose a photo or use the camera to begin.").font(.footnote).foregroundStyle(.secondary)
           }.padding(24).frame(maxWidth: .infinity, alignment: .leading)
         }.navigationTitle(model.entry.name)
           .toolbar { Button("Done", systemImage: "checkmark") { notes = false } }

@@ -1,51 +1,51 @@
 import SwiftUI
 import PhotosUI
-import AVFoundation
 
 struct ContentView: View {
   @State private var model = DexModel()
   @State private var settings = false
   @State private var journal = false
-  @State private var camera = false
+  @State private var picker = false
   @State private var photo: PhotosPickerItem?
   @Environment(\.scenePhase) private var scenePhase
   @Environment(\.horizontalSizeClass) private var sizeClass
-  @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
   var body: some View {
     NavigationStack {
       GeometryReader { geometry in
-        let wide = sizeClass == .regular && geometry.size.width > 580
-        Group {
-          if wide {
-            if #available(iOS 27.1, *) {
-              DuoHardwareLayout {
-                mainPanel
-              } right: {
-                rightPanel
-              }
-            } else {
-              HStack(spacing: 0) { mainPanel; rightPanel }
-            }
-          } else {
-            ReplicaCover()
+        if sizeClass == .regular && geometry.size.width > 580 {
+          // iPad, and the larger iPhones in landscape: both halves open side by side.
+          HStack(spacing: 0) {
+            mainPanel
+            HingeSpine().frame(width: 22).padding(.vertical, 10)
+            rightPanel
           }
+          .padding(.horizontal, 8)
+          // Keep the halves near their designed proportions on a tall iPad screen.
+          .frame(maxHeight: geometry.size.width * 1.05)
+          .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+          // iPhone: one half per page; swipe to turn the Pokédex over.
+          TabView {
+            mainPanel
+            rightPanel
+          }
+          .tabViewStyle(.page(indexDisplayMode: .always))
+          .indexViewStyle(.page(backgroundDisplayMode: .never))
+          .padding(.horizontal, 4)
         }
       }
-      .ignoresSafeArea()
       .statusBarHidden()
       .persistentSystemOverlays(.hidden)
-      .modifier(ImmersiveHardwarePresentation())
+      .toolbarVisibility(.hidden, for: .navigationBar)
       .background(DexTheme.shell.ignoresSafeArea())
       .sheet(isPresented: $settings) { SettingsView(model: model) }
       .sheet(isPresented: $journal) { JournalView(model: model) }
-      .fullScreenCover(isPresented: $camera) {
-        CameraCapture { image in
-          camera = false
-          if let image { model.scan(image) }
-        }.ignoresSafeArea()
-      }
+      .sheet(isPresented: $picker) { SpeciesPickerView { model.assign($0) } }
       .alert("Capture needs attention", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
+        if model.canAssign {
+          Button("Name it myself") { model.error = nil; picker = true }
+        }
         Button("OK", role: .cancel) { model.error = nil }
       } message: { Text(model.error ?? "") }
       .task(id: photo) {
@@ -60,7 +60,12 @@ struct ContentView: View {
         Button("OK", role: .cancel) { model.narrator.error = nil }
       } message: { Text(model.narrator.error ?? "") }
       .onChange(of: scenePhase) { _, phase in
-        if phase != .active { model.narrator.stop() }
+        if phase == .active {
+          if model.liveCamera { Task { await model.startCamera() } }
+        } else {
+          model.narrator.stop()
+          model.stopCamera()
+        }
       }
       .sensoryFeedback(.success, trigger: model.history.count)
     }
@@ -70,22 +75,14 @@ struct ContentView: View {
 
   private var mainPanel: some View {
     HardwareFit {
-      LeftHardwarePanel(model: model, photo: $photo, camera: { Task { await openCamera() } }, journal: { journal = true })
+      LeftHardwarePanel(model: model, photo: $photo, camera: { Task { await model.snap() } }, journal: { journal = true })
     }
   }
 
   private var rightPanel: some View {
     HardwareFit {
-      RightHardwarePanel(model: model, settings: { settings = true }, journal: { journal = true })
+      RightHardwarePanel(model: model, settings: { settings = true }, journal: { journal = true }, pick: { picker = true })
     }
   }
 
-  private func openCamera() async {
-    guard UIImagePickerController.isSourceTypeAvailable(.camera) else {
-      model.error = "A camera isn’t available here. Use Choose Photo to capture a Pokémon from your library."
-      return
-    }
-    let granted = await AVCaptureDevice.requestAccess(for: .video)
-    if granted { model.narrator.stop(); camera = true } else { model.error = "Camera access is off. Allow it in system Settings, or choose a photo from your library." }
-  }
 }
