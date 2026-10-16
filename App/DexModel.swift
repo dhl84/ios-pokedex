@@ -36,7 +36,23 @@ final class DexModel {
   }
   /// The display shows the live camera until a scan starts; the camera key re-arms it.
   var liveCamera = true
-  var cameraAuthorized: Bool?
+  var cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
+  var cameraAuthorized: Bool? {
+    switch cameraStatus {
+    case .authorized: true
+    case .notDetermined: nil
+    default: false
+    }
+  }
+  /// Why the camera cannot run, with the exact place in Settings to fix it.
+  var cameraProblem: String {
+    switch cameraStatus {
+    case .restricted:
+      "Screen Time is blocking the camera on this device. Open Settings, then Screen Time, Content & Privacy Restrictions, Allowed Apps & Features, and turn on Camera."
+    default:
+      "Pocket Dex is not allowed to use the camera. Open Settings, then Apps, Pocket Dex, and turn on Camera. If Pocket Dex is not listed there, look under Privacy & Security, Camera."
+    }
+  }
   @ObservationIgnored let camera = CameraEngine()
   /// The cutout and location of the most recent scan, kept so the trainer can name it by hand.
   private var lastCutoutData: Data?
@@ -213,8 +229,9 @@ final class DexModel {
   }
 
   func startCamera() async {
-    if cameraAuthorized == nil { cameraAuthorized = await AVCaptureDevice.requestAccess(for: .video) }
-    if cameraAuthorized == true { camera.start() }
+    if cameraStatus == .notDetermined { _ = await AVCaptureDevice.requestAccess(for: .video) }
+    cameraStatus = AVCaptureDevice.authorizationStatus(for: .video)
+    if cameraStatus == .authorized { camera.start() }
   }
 
   func stopCamera() { camera.stop() }
@@ -223,7 +240,7 @@ final class DexModel {
   func snap() async {
     guard CameraEngine.hasCamera else { error = "A camera isn’t available here. Use PHOTO to capture a Pokémon from your library."; return }
     guard liveCamera, !busy else { rearm(); return }
-    if cameraAuthorized == false { error = "Camera access is off. Allow it in system Settings, or choose a photo from your library."; return }
+    if cameraAuthorized == false { error = cameraProblem; return }
     if let image = await camera.capture() { scan(image) }
     else { error = "Couldn’t take a photo. Try again." }
   }

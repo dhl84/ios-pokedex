@@ -48,6 +48,9 @@ struct ContentView: View {
         if model.canAssign {
           Button("Name it myself") { model.error = nil; picker = true }
         }
+        if model.error == model.cameraProblem {
+          Button("Open Settings") { model.error = nil; UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!) }
+        }
         Button("OK", role: .cancel) { model.error = nil }
       } message: { Text(model.error ?? "") }
       .task(id: photo) {

@@ -25,9 +25,13 @@ struct DisplayPanel: View {
           if showsCamera {
             if model.cameraAuthorized == false {
               VStack(spacing: 8) {
-                Image(systemName: "camera.slash").font(.system(size: 40))
-                Text("Camera is off. Allow it in system Settings, or use PHOTO.").font(.caption).multilineTextAlignment(.center)
-              }.opacity(0.6).padding()
+                Image(systemName: "camera.slash").font(.system(size: 32)).opacity(0.6)
+                Text(model.cameraProblem).font(.caption2).multilineTextAlignment(.center).opacity(0.8)
+                Link("Open Settings", destination: URL(string: UIApplication.openSettingsURLString)!)
+                  .font(.caption.bold()).padding(.horizontal, 10).padding(.vertical, 5)
+                  .background(DexTheme.ink.opacity(0.12), in: Capsule())
+                Text("Or use PHOTO below.").font(.caption2).opacity(0.6)
+              }.padding(10)
             } else {
               CameraPreview(engine: model.camera)
                 .clipShape(RoundedRectangle(cornerRadius: 4))
