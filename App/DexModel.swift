@@ -193,6 +193,7 @@ final class DexModel {
       cutout = UIImage(data: data)
     }
     saved.location = lastLocation
+    saved.scannedAt = Date()
     let updatedHistory = [saved] + history
     UserDefaults.standard.set(try JSONEncoder().encode(updatedHistory), forKey: "entries")
     history = updatedHistory
@@ -202,6 +203,14 @@ final class DexModel {
   }
 
   func cancel() { task?.cancel() }
+
+  /// Removes one scan and its image for good. The Pokédex un-registers the species if this was its only scan.
+  func delete(_ item: DexEntry) {
+    history.removeAll { $0.id == item.id }
+    if let name = item.imageName { try? FileManager.default.removeItem(at: ScanImageStore.directory.appendingPathComponent(name)) }
+    UserDefaults.standard.set(try? JSONEncoder().encode(history), forKey: "entries")
+    if entry.id == item.id, !busy { rearm() }
+  }
 
   func startCamera() async {
     if cameraAuthorized == nil { cameraAuthorized = await AVCaptureDevice.requestAccess(for: .video) }

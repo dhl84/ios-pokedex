@@ -21,6 +21,7 @@ Minimum iOS 26. The card reader and background removal run on the device with Vi
 - Works on iPhone and iPad instead of the iPhone Duo. The iPad and large iPhones in landscape show both halves side by side with the hinge; smaller screens get one half per page.
 - Real Pokédex data for all 386 species: name, category (for example "Seed Pokémon"), types and the Generation III entry text, bundled from PokeAPI. The AI only has to say which Pokémon it is; the entry text is the real one.
 - A second identification route through the Claude API for devices without Apple Intelligence. Settings has a picker: Automatic, On this device, Claude.
+- A scan index key on the blue keypad: every scan newest first, with its date, time and place, a thumbnail, and swipe to delete. Tap a row to show it on the display; tap the place to open the map.
 - A pencil key on the blue keypad to name a Pokémon yourself when no model is sure, or got it wrong. The scan is saved under the species you choose.
 - An Xcode project generated from `project.yml` with [XcodeGen](https://github.com/yonaskolb/XcodeGen), signed for the dhl84 team.
 

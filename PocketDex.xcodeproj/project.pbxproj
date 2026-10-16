@@ -37,6 +37,7 @@
 		CD44E121909AD6F40BFEA5EA /* CutoutFraming.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09289CF2E7CD6C5135806CED /* CutoutFraming.swift */; };
 		D2F6FB51E5AFAC2E44585CBA /* ScanImageStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4919F7BC34981C8A98DF312E /* ScanImageStore.swift */; };
 		E87656D81F29865F84DE2F57 /* DexHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19F9D0E9F528BF2D40B2C472 /* DexHardware.swift */; };
+		ED54797780C88FDB26FF0A51 /* ScanIndexView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE03C514B130F9756A1395C0 /* ScanIndexView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,6 +71,7 @@
 		CF1056FB2330625F6A5B9E20 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D6554BD07799A1F804DB2DA8 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E9A8B92B6551D510F77A6E62 /* DexVoicePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DexVoicePlayer.swift; sourceTree = "<group>"; };
+		EE03C514B130F9756A1395C0 /* ScanIndexView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanIndexView.swift; sourceTree = "<group>"; };
 		F41FB8D054DD163CB0EF4182 /* PokemonCardImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PokemonCardImage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -100,6 +102,7 @@
 				7CB8619BEF3EB837695D93EF /* PokemonSpecies.swift */,
 				73C77B8964B9DA9EFEEC06EA /* ReplicaPanels.swift */,
 				4919F7BC34981C8A98DF312E /* ScanImageStore.swift */,
+				EE03C514B130F9756A1395C0 /* ScanIndexView.swift */,
 				933D9D5908F551B5C5D7D90F /* ScanLocation.swift */,
 				BD435B3B07601FD79D80413A /* ScanLocationCapture.swift */,
 				14E2482E2BE3DDB5844CCC0E /* ScanLocationView.swift */,
@@ -220,6 +223,7 @@
 				ACA1742D19B6BF1A22C5DF10 /* PokemonSpecies.swift in Sources */,
 				091D430DAC0BC7E52B0B5D37 /* ReplicaPanels.swift in Sources */,
 				D2F6FB51E5AFAC2E44585CBA /* ScanImageStore.swift in Sources */,
+				ED54797780C88FDB26FF0A51 /* ScanIndexView.swift in Sources */,
 				A49DF2E580D36AF184B77D5F /* ScanLocation.swift in Sources */,
 				AE04FF0C83D83ECCE9375C58 /* ScanLocationCapture.swift in Sources */,
 				42B2AEC52601798E775CE308 /* ScanLocationView.swift in Sources */,

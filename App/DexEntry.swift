@@ -14,6 +14,10 @@ struct DexEntry: Codable, Identifiable {
   var location: ScanLocation?
   // Set when the entry text comes from the bundled Pokédex data rather than an AI.
   var genus: String?
+  // Optional for compatibility with discoveries saved before the scan index.
+  var scannedAt: Date?
+
+  var when: Date? { scannedAt ?? location?.capturedAt }
 
   static let empty = DexEntry(name: "Ready to capture", number: 0, type: "—", summary: "No Pokémon captured yet.\n\nTake a picture or choose a photo to begin your next discovery.")
 

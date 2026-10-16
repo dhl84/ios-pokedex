@@ -6,6 +6,7 @@ struct ContentView: View {
   @State private var settings = false
   @State private var journal = false
   @State private var picker = false
+  @State private var index = false
   @State private var photo: PhotosPickerItem?
   @Environment(\.scenePhase) private var scenePhase
   @Environment(\.horizontalSizeClass) private var sizeClass
@@ -42,6 +43,7 @@ struct ContentView: View {
       .sheet(isPresented: $settings) { SettingsView(model: model) }
       .sheet(isPresented: $journal) { JournalView(model: model) }
       .sheet(isPresented: $picker) { SpeciesPickerView { model.assign($0) } }
+      .sheet(isPresented: $index) { ScanIndexView(model: model) }
       .alert("Capture needs attention", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
         if model.canAssign {
           Button("Name it myself") { model.error = nil; picker = true }
@@ -81,7 +83,7 @@ struct ContentView: View {
 
   private var rightPanel: some View {
     HardwareFit {
-      RightHardwarePanel(model: model, settings: { settings = true }, journal: { journal = true }, pick: { picker = true })
+      RightHardwarePanel(model: model, settings: { settings = true }, journal: { journal = true }, pick: { picker = true }, index: { index = true })
     }
   }
 

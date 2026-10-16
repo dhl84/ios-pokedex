@@ -76,6 +76,7 @@ struct RightHardwarePanel: View {
   var settings: () -> Void
   var journal: () -> Void
   var pick: () -> Void
+  var index: () -> Void
   @State private var notes = false
   @State private var showLocation = false
   var body: some View {
@@ -104,21 +105,22 @@ struct RightHardwarePanel: View {
               ForEach(0..<5) { column in
                 let isLocationKey = row == 0 && column == 0
                 let isPickKey = row == 0 && column == 1
+                let isIndexKey = row == 0 && column == 2
                 Button {
-                  if isLocationKey { showLocation = true } else if isPickKey { pick() } else { notes = true }
+                  if isLocationKey { showLocation = true } else if isPickKey { pick() } else if isIndexKey { index() } else { notes = true }
                 } label: {
                   RoundedRectangle(cornerRadius: 3)
                     .fill(LinearGradient(colors: [Color(red: 0.3, green: 0.70, blue: 0.95), Color(red: 0.12, green: 0.42, blue: 0.74)], startPoint: .top, endPoint: .bottom))
                     .overlay(RoundedRectangle(cornerRadius: 3).stroke(.black.opacity(0.65)))
                     .frame(height: 34)
                     .overlay {
-                      if isLocationKey || isPickKey {
-                        Image(systemName: isLocationKey ? "mappin.and.ellipse" : "pencil")
+                      if isLocationKey || isPickKey || isIndexKey {
+                        Image(systemName: isLocationKey ? "mappin.and.ellipse" : isPickKey ? "pencil" : "list.bullet.rectangle")
                           .font(.system(size: 17, weight: .semibold))
                           .foregroundStyle(.black.opacity(0.8))
                       }
                     }
-                }.accessibilityLabel(isLocationKey ? "Show capture location" : isPickKey ? "Name this Pokémon yourself" : "Entry details, key \(row * 5 + column + 1)")
+                }.accessibilityLabel(isLocationKey ? "Show capture location" : isPickKey ? "Name this Pokémon yourself" : isIndexKey ? "Scan index" : "Entry details, key \(row * 5 + column + 1)")
                   .disabled((isLocationKey && (model.busy || model.entry.number == 0)) || (isPickKey && !model.canAssign))
               }
             }
