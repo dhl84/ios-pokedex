@@ -23,15 +23,17 @@ upper = {n.upper(): n for n in names.values()}
 pat = re.compile(r"\b(" + "|".join(re.escape(u) for u in sorted(upper, key=len, reverse=True)) + r")\b")
 for sid in flavor: flavor[sid] = (flavor[sid][0], pat.sub(lambda m: upper[m.group(1)], flavor[sid][1]))
 for sid in flavor: flavor[sid] = (flavor[sid][0], re.sub(r"\b([A-Z]{2,})\b", lambda m: m.group(1).capitalize(), flavor[sid][1]))
+gen = {int(r['id']): int(r['generation_id']) for r in csv.DictReader(open(f'{d}/pokemon_species.csv')) if int(r['id']) <= N}
+size = {int(r['species_id']): (int(r['height']), int(r['weight'])) for r in csv.DictReader(open(f'{d}/pokemon.csv')) if r['is_default'] == '1' and int(r['species_id']) <= N}
 def q(s): return '"' + s.replace('\\', '\\\\').replace('"', '\\"') + '"'
 lines = ['// Generated from PokeAPI CSV data (CC BY-SA). Do not edit by hand; see Design/Pokedex.md.',
          'import Foundation', '',
          'extension PokemonSpecies {',
-         '  /// name, genus, type 1, type 2 (empty if none), Pokédex entry text. Index 0 is No. 001.',
-         '  static let data: [(String, String, String, String, String)] = [']
+         '  /// name, genus, type 1, type 2 (empty if none), Pokédex entry text, generation, height in dm, weight in hg. Index 0 is No. 001.',
+         '  static let data: [(String, String, String, String, String, Int, Int, Int)] = [']
 for i in range(1, N + 1):
     t = ptypes[i]
-    lines.append(f'    ({q(names[i])}, {q(genus[i])}, {q(t[1])}, {q(t.get(2, ""))}, {q(flavor[i][1])}),')
+    lines.append(f'    ({q(names[i])}, {q(genus[i])}, {q(t[1])}, {q(t.get(2, ""))}, {q(flavor[i][1])}, {gen[i]}, {size[i][0]}, {size[i][1]}),')
 lines += ['  ]', '}', '']
 open(out, 'w').write('\n'.join(lines))
 print(len(names), len(flavor), 'species;', sum(1 for i in range(1, N+1) if flavor[i][0] < 8), 'with Gen III text')

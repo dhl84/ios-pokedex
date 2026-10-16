@@ -1,4 +1,4 @@
-# Generations I–III Pokédex
+# National Pokédex
 
 386 English species names are bundled in National Pokédex order from PokeAPI:
 https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/pokemon_species_names.csv
@@ -32,7 +32,7 @@ ScanImageStore writes each successful cutout as an atomic PNG to Documents/Scans
 
 ## Bundled Pokédex data (dhl84 fork)
 
-`App/PokemonData.swift` holds name, genus, types and entry text for every species, 001–1025; the journal and picker use the first 386 (`PokemonSpecies.catalog`). It is generated from the PokeAPI CSV files `pokemon_species_names.csv`, `pokemon_types.csv`, `types.csv` and `pokemon_species_flavor_text.csv` (English, language 9). The entry text prefers FireRed, then LeafGreen, Emerald, Sapphire and Ruby. Game Boy Advance all-caps words are title-cased and species names restored to their normal spelling.
+`App/PokemonData.swift` holds name, genus, types, entry text, generation, height and weight for every species, 001–1025, and the journal and picker list them all. Sprites are the default front sprite of each species from PokeAPI/sprites (96 × 96), one image set per number. It is generated from the PokeAPI CSV files `pokemon_species_names.csv`, `pokemon_types.csv`, `types.csv` and `pokemon_species_flavor_text.csv` (English, language 9). The entry text prefers FireRed, then LeafGreen, Emerald, Sapphire and Ruby. Game Boy Advance all-caps words are title-cased and species names restored to their normal spelling.
 
 Regenerate with the script kept in this repo:
 

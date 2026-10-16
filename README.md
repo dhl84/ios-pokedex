@@ -1,6 +1,6 @@
 # Pocket Dex
 
-A SwiftUI Pokédex replica for iPhone and iPad. Point the camera at a Pokémon toy, card or picture: the app removes the background, identifies the species, shows the Generation III Pokédex entry, reads it aloud in a Pokédex voice, and records the catch in a 386-entry National Pokédex.
+A SwiftUI Pokédex replica for iPhone and iPad. Point the camera at a Pokémon toy, card or picture: the app removes the background, identifies the species, shows the Pokédex entry, reads it aloud in a Pokédex voice, and records the catch in a National Pokédex of all 1025 species.
 
 This is a fork of [vincent-pradeilles/ios-pokedex](https://github.com/vincent-pradeilles/ios-pokedex), which was built for the foldable iPhone Duo. This version runs on ordinary iPhones and iPads.
 
@@ -17,9 +17,9 @@ Minimum iOS 26. The card reader and background removal run on the device with Vi
 ## What changed from the original
 
 - The display is a live camera feed. Press the camera key to capture; press it again after a scan to bring the feed back.
-- A card reader: on-device text recognition reads the species name printed on a trading card, for every species up to No. 1025, so a card needs no AI model and no key.
+- A card reader: on-device text recognition reads the species name printed on a trading card, for every species, so a card needs no AI model and no key.
 - Works on iPhone and iPad instead of the iPhone Duo. The iPad and large iPhones in landscape show both halves side by side with the hinge; smaller screens get one half per page.
-- Real Pokédex data for all 386 species: name, category (for example "Seed Pokémon"), types and the Generation III entry text, bundled from PokeAPI. The AI only has to say which Pokémon it is; the entry text is the real one.
+- Real Pokédex data for all 1025 canon species, Bulbasaur to Pecharunt: name, category (for example "Seed Pokémon"), types, height, weight, generation and the game's entry text, bundled from PokeAPI with a sprite for each. The AI only has to say which Pokémon it is; the entry text is the real one.
 - A second identification route through the Claude API for devices without Apple Intelligence. Settings has a picker: Automatic, On this device, Claude.
 - A scan index key on the blue keypad: every scan newest first, with its date, time and place, a thumbnail, and swipe to delete. Tap a row to show it on the display; tap the place to open the map.
 - A pencil key on the blue keypad to name a Pokémon yourself when no model is sure, or got it wrong. The scan is saved under the species you choose.
@@ -59,6 +59,6 @@ xcrun devicectl device install app --device <device udid> <path to Pocket Dex.ap
 
 ## Data and credits
 
-- Species names, categories, types and entry text for all 1025 species: [PokeAPI](https://github.com/PokeAPI/pokeapi) CSV data, regenerated with `gen_data.py` (see `Design/Pokedex.md`).
-- Sprites: Pokémon Emerald front sprites from [PokeAPI/sprites](https://github.com/PokeAPI/sprites).
+- Species names, categories, types, height, weight, generation and entry text for all 1025 species: [PokeAPI](https://github.com/PokeAPI/pokeapi) CSV data, regenerated with `Scripts/gen_data.py` (see `Design/Pokedex.md`).
+- Sprites: the default front sprite of each species from [PokeAPI/sprites](https://github.com/PokeAPI/sprites), `sprites/pokemon/<number>.png`.
 - Pokémon and Pokémon character names are trademarks of Nintendo, Creatures and GAME FREAK. This is an independent fan project.

@@ -168,10 +168,13 @@ struct RightHardwarePanel: View {
       NavigationStack {
         ScrollView {
           VStack(alignment: .leading, spacing: 20) {
-            Text(model.entry.type).font(.headline).foregroundStyle(.secondary)
+            Text([model.entry.genus, model.entry.type].compactMap { $0 }.joined(separator: " · ")).font(.headline).foregroundStyle(.secondary)
+            if let species = PokemonSpecies.number(model.entry.number), model.entry.genus != nil {
+              Text(species.sizeLabel).font(.subheadline).foregroundStyle(.secondary)
+            }
             Text(model.entry.summary).font(.title3)
             Text(model.entry.number > 0
-              ? (model.entry.genus != nil ? "Pokédex entry from the Generation III games." : "AI-generated. Identification and notes can be inaccurate.")
+              ? (model.entry.genus != nil ? "Pokédex entry from the games, via PokeAPI." : "AI-generated. Identification and notes can be inaccurate.")
               : "Choose a photo or use the camera to begin.").font(.footnote).foregroundStyle(.secondary)
           }.padding(24).frame(maxWidth: .infinity, alignment: .leading)
         }.navigationTitle(model.entry.name)

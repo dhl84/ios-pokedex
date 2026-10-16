@@ -57,7 +57,7 @@ struct SettingsView: View {
         }
         Section("About") {
           LabeledContent("Pocket Dex", value: "1.1")
-          Text("An independent fan project. Pokémon and Pokémon character names are trademarks of Nintendo, Creatures, and GAME FREAK. Pokédex entries and sprites come from the Generation III games via PokeAPI.")
+          Text("An independent fan project. Pokémon and Pokémon character names are trademarks of Nintendo, Creatures, and GAME FREAK. Pokédex entries and sprites for all 1025 species come from the games via PokeAPI.")
             .font(.footnote).foregroundStyle(.secondary)
         }
       }

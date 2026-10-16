@@ -70,7 +70,7 @@ final class DexModel {
   }
 
   var capturedSpecies: Set<Int> {
-    Set(history.filter { !$0.isSample && (1...386).contains($0.number) }.map(\.number))
+    Set(history.filter { !$0.isSample && (1...PokemonSpecies.catalog.count).contains($0.number) }.map(\.number))
   }
 
   var latestScans: [Int: DexEntry] {

@@ -27,16 +27,16 @@ struct JournalView: View {
           Section {
             VStack(alignment: .leading, spacing: 12) {
               Text("NATIONAL POKÉDEX").font(.caption.monospaced()).foregroundStyle(.secondary)
-              Text("\(captured.count) / 386 captured").font(.title2.bold()).monospacedDigit()
-              ProgressView(value: Double(captured.count), total: 386)
+              Text("\(captured.count) / \(PokemonSpecies.catalog.count) captured").font(.title2.bold()).monospacedDigit()
+              ProgressView(value: Double(captured.count), total: Double(PokemonSpecies.catalog.count))
                 .accessibilityLabel("National Pokédex completion")
-              Text("Generations I–III • Kanto, Johto & Hoenn").font(.subheadline).foregroundStyle(.secondary)
+              Text("Generations I–IX • Kanto to Paldea").font(.subheadline).foregroundStyle(.secondary)
             }.padding(.vertical, 8)
             Picker("Generation", selection: $generation) {
               Text("All generations").tag(0)
-              Text("I · Kanto").tag(1)
-              Text("II · Johto").tag(2)
-              Text("III · Hoenn").tag(3)
+              ForEach(1...PokemonSpecies.regions.count, id: \.self) { gen in
+                Text("\(PokemonSpecies.numerals[gen - 1]) · \(PokemonSpecies.regions[gen - 1])").tag(gen)
+              }
             }
             Picker("Pokémon status", selection: $filter) {
               ForEach(CaptureFilter.allCases) { Text($0.rawValue).tag($0) }

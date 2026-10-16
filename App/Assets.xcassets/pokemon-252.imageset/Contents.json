@@ -1,13 +1,4 @@
 {
-  "images": [
-    {
-      "filename": "pokemon-252.png",
-      "idiom": "universal",
-      "scale": "1x"
-    }
-  ],
-  "info": {
-    "author": "xcode",
-    "version": 1
-  }
+  "images" : [ { "filename" : "pokemon-252.png", "idiom" : "universal", "scale" : "1x" } ],
+  "info" : { "author" : "xcode", "version" : 1 }
 }
