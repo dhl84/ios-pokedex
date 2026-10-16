@@ -40,6 +40,12 @@ struct DisplayPanel: View {
                 .accessibilityLabel("Live camera. Press the camera button to capture.")
               Image(systemName: "viewfinder").font(.system(size: 75, weight: .thin)).foregroundStyle(.white.opacity(0.7))
                 .allowsHitTesting(false).accessibilityHidden(true)
+              Button { model.camera.flip() } label: {
+                Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90.camera").font(.system(size: 15, weight: .semibold))
+                  .foregroundStyle(.white).padding(8).background(.black.opacity(0.45), in: Circle())
+              }
+              .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing).padding(8)
+              .accessibilityLabel("Switch between front and rear camera")
             }
           } else if model.originalPhoto != nil || model.cutout != nil {
             ScanReveal(original: model.originalPhoto, cutout: model.cutout, subjectBounds: model.subjectBounds, artificialShadow: entry.removalMode == .onDevice, removing: model.busy && model.cutout == nil)

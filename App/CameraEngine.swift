@@ -7,6 +7,7 @@ final class CameraEngine: NSObject, AVCapturePhotoCaptureDelegate, @unchecked Se
   let session = AVCaptureSession()
   /// AVCapture rotation for the current interface orientation; the preview view keeps it current.
   var rotation: CGFloat = 90
+  private(set) var position: AVCaptureDevice.Position = .back
   private let output = AVCapturePhotoOutput()
   private let queue = DispatchQueue(label: "PocketDex.camera")
   private var configured = false
@@ -28,12 +29,26 @@ final class CameraEngine: NSObject, AVCapturePhotoCaptureDelegate, @unchecked Se
     configured = true
     session.beginConfiguration()
     session.sessionPreset = .photo
-    if let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
-       let input = try? AVCaptureDeviceInput(device: device), session.canAddInput(input) {
-      session.addInput(input)
-    }
+    useCamera(at: position)
     if session.canAddOutput(output) { session.addOutput(output) }
     session.commitConfiguration()
+  }
+
+  /// Swaps the input for the camera on the other side. Call on the session queue inside a configuration.
+  private func useCamera(at position: AVCaptureDevice.Position) {
+    for input in session.inputs { session.removeInput(input) }
+    guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position),
+          let input = try? AVCaptureDeviceInput(device: device), session.canAddInput(input) else { return }
+    session.addInput(input)
+    self.position = position
+  }
+
+  func flip() {
+    queue.async {
+      self.session.beginConfiguration()
+      self.useCamera(at: self.position == .back ? .front : .back)
+      self.session.commitConfiguration()
+    }
   }
 
   func capture() async -> UIImage? {
